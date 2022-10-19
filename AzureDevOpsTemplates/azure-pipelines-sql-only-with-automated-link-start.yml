@@ -1,0 +1,128 @@
+# Sample of how to deploy to an Azure Synapse Dedicated SQL Pool
+# You can use a self-hosted agent installed locally for this to work
+# You can also use a Microsoft-hosted agent for the Azure services
+
+# Changed to use the variable group containing Link details
+variables:
+- group: SQLServer2022
+- group: SQLLinkDedicatedSQLPool
+
+# Take note that if this is added as a pipeline any updates of main branch triggers it
+trigger:
+- main
+
+# Adding a pool that can create the dacpacs
+# That can also connect to both SQL Server 2022 and the dedicated SQL Pool
+pool: 
+  name: $(agentpool)
+
+stages:
+
+- stage: StopLink
+  displayName: 'Stop Link'
+
+  jobs:
+  - job: 'StopLink'
+    displayName: 'Stop Link'
+
+    steps:
+
+    - task: PowerShell@2
+      displayName: 'Install Az.Synapse PoSh Module'
+      inputs:
+        targetType: 'inline'
+        script: 'Install-Module -Name Az.Synapse -Force'
+
+    - task: AzurePowerShell@5
+      displayName: 'Stop Link'
+      inputs:
+        azureSubscription: '$(AzureSubscription)'
+        ScriptType: 'InlineScript'
+        Inline: |
+          Stop-AzSynapseLinkConnection -WorkspaceName $(WorkspaceName) -Name $(LinkName)
+          
+          $status = Get-AzSynapseLinkConnectionDetailedStatus -WorkspaceName $(WorkspaceName) -Name $(LinkName)
+
+          do{
+            $status = Get-AzSynapseLinkConnectionDetailedStatus -WorkspaceName $(WorkspaceName) -Name $(LinkName)
+
+            Start-Sleep -Seconds 20
+          } Until ($status.Status -eq "Stopped")
+        azurePowerShellVersion: 'LatestVersion'
+
+- stage: CreateSQL2022dacpac
+  displayName: 'Build SQL dacpac'
+      
+  jobs:
+  - job: 'BuildSQL2022dacpac'
+    displayName: 'Build SQL Server 2022 dacpac'
+
+    steps:
+
+    - task: VSBuild@1
+      displayName: 'Build Database Project'
+      inputs:
+        solution: WideWorldImportersDBProject.sqlproj
+        configuration: '$(BuildConfiguration)'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Artifact: SQL 2022'
+      inputs:
+        PathtoPublish: 'bin\$(BuildConfiguration)'
+        ArtifactName: SQL2022
+
+- stage: DeploySQL2022dacpac
+  displayName: 'Deploy SQL dacpac'
+      
+  jobs:
+  - job: 'DeploySQLPooldacpac'
+    displayName: 'Deploy SQL 2022 dacpac'
+
+    steps:
+
+    - task: DownloadBuildArtifacts@1
+      displayName: 'Download Build Artifacts'
+      inputs:
+        artifactName: '$(SQLartifactname)'
+
+    - task: SqlDacpacDeploymentOnMachineGroup@0
+      displayName: 'SQL 2022 deploy'
+      inputs:
+        DacpacFile: '$(SQLdacpacfile)'
+        DatabaseName: '$(database)'
+        AuthScheme: sqlServerAuthentication
+        SqlUsername: '$(sqluser)'
+        SqlPassword: '$(sqlpw)'
+        AdditionalArguments: '/p:BlockOnPossibleDataLoss=false'
+
+- stage: StartLink
+  displayName: 'Start Link'
+      
+  jobs:
+  - job: 'StartLink'
+    displayName: 'Start Link'
+
+    steps:
+
+    - task: PowerShell@2
+      displayName: 'Install Az.Synapse PoSh Module'
+      inputs:
+        targetType: 'inline'
+        script: 'Install-Module -Name Az.Synapse -Force'
+
+    - task: AzurePowerShell@5
+      displayName: 'Start Link'
+      inputs:
+        azureSubscription: '$(AzureSubscription)'
+        ScriptType: 'InlineScript'
+        Inline: |
+          Start-AzSynapseLinkConnection -WorkspaceName $(WorkspaceName) -Name $(LinkName)
+          
+          $status = Get-AzSynapseLinkConnectionDetailedStatus -WorkspaceName $(WorkspaceName) -Name $(LinkName)
+
+          do{
+            $status = Get-AzSynapseLinkConnectionDetailedStatus -WorkspaceName $(WorkspaceName) -Name $(LinkName)
+
+            Start-Sleep -Seconds 20
+          } Until ($status.Status -eq "Running")
+        azurePowerShellVersion: 'LatestVersion'
