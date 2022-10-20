@@ -69,7 +69,7 @@ stages:
       displayName: 'Publish Artifact: SQL 2022'
       inputs:
         PathtoPublish: 'bin\$(BuildConfiguration)'
-        ArtifactName: SQL2022
+        ArtifactName: $(SQLartifactname)
 
 - stage: DeploySQL2022dacpac
   displayName: 'Deploy SQL dacpac'
