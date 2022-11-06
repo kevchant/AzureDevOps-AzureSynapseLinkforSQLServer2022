@@ -1,4 +1,5 @@
 CREATE TABLE [Sales].[Orders] (
+    -- Comment for T-SQL Tuesday 156 post
     [OrderID]                     INT            CONSTRAINT [DF_Sales_Orders_OrderID] DEFAULT (NEXT VALUE FOR [Sequences].[OrderID]) NOT NULL,
     [CustomerID]                  INT            NOT NULL,
     [SalespersonPersonID]         INT            NOT NULL,
