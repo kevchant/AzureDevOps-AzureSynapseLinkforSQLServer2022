@@ -1,6 +1,10 @@
-# Sample of how to deploy to an Azure Synapse Dedicated SQL Pool
+# Sample of how to deploy to Azure Synapse Link for SQL Server 2022
+# Note that in this version the Build of the dacpac is done FIRST
+# It automatically creates a dacpac 
+# It then stops Azure Synapse Link before deploying the dacpac, before startng the link again
 # You can use a self-hosted agent installed locally for this to work
 # You can also use a Microsoft-hosted agent for the Azure services
+
 
 # Changed to use the variable group containing Link details
 variables:
