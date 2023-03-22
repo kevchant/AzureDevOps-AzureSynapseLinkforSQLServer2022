@@ -4,6 +4,8 @@ Example of a state-Based deployment for [Azure Synapse Link for SQL Server 2022]
 
 It first stops the link running. It then deploys updates to a database running in SQL Server 2022 before starting the link again. Based on a blog post I wrote called '[A complete CI/CD experience for Azure Synapse Link for SQL Server 2022](https://www.kevinrchant.com/2022/10/20/a-complete-ci-cd-experience-for-azure-synapse-link-for-sql-server-2022/)'.
 
+You can see this template in the [video for the March 2023 edition of the Azure Synapse Analytics and MVP series](https://www.youtube.com/watch?v=wakDmLYxSD0). Click on the link to view.
+
 It contains an example YAML file that you can use as a YAML pipeline in Azure Pipelines. You can find it in the AzureDevOpsTemplates folder. In order to use it in Azure Pipelines you can either import or fork this repository into another GitHub repository, or into [Azure Repos](https://bit.ly/3s4uO77).
 
 Afterwards, you can select the YAML file in Azure Pipelines and tailor the pipeline to suit your needs. You can find a guide on how to select the YAML file whilst setting up a YAML Pipeline this in a blog post I wrote called '[Connect a Database Project in Azure Repos to Azure Pipelines](https://bit.ly/3uF1Iv9)'.
