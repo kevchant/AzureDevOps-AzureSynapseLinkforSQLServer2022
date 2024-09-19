@@ -1,6 +1,6 @@
 # Azure Synapse Link for SQL Server 2022 Database Project
 
-Example of a state-Based deployment for [Azure Synapse Link for SQL Server 2022](https://learn.microsoft.com/en-us/azure/synapse-analytics/synapse-link/sql-server-2022-synapse-link?WT.mc_id=DP-MVP-5004032).
+Example of a state-Based deployment for [Azure Synapse Link for SQL Server 2022](https://learn.microsoft.com/en-us/azure/synapse-analytics/synapse-link/sql-server-2022-synapse-link?WT.mc_id=DP-MVP-5004032) that utilizes a [SQL database project](https://learn.microsoft.com/en-us/sql/tools/sql-database-projects/sql-database-projects?view=sql-server-ver16&WT.mc_id=DP-MVP-5004032%3Fview%3Dsql-server-ver16).
 
 It first stops the link running. It then deploys updates to a database running in SQL Server 2022 before starting the link again. Based on a blog post I wrote called '[A complete CI/CD experience for Azure Synapse Link for SQL Server 2022](https://www.kevinrchant.com/2022/10/20/a-complete-ci-cd-experience-for-azure-synapse-link-for-sql-server-2022/)'.
 
